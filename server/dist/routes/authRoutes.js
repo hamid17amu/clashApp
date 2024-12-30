@@ -55,18 +55,18 @@ router.post("/login", async (req, res) => {
                 email: payload.email
             } });
         if (!user || user == null || user === undefined) {
-            res.status(422).json({ errors: {
+            return res.status(422).json({ errors: {
                     email: "Email not found."
                 } });
         }
         const compare = await bcrypt.compare(payload.password, user.password);
         if (!compare) {
-            res.status(422).json({ errors: {
+            return res.status(422).json({ errors: {
                     email: "Invalid credentials"
                 } });
         }
         if (user?.emailVarifiedAt === null) {
-            res.status(422).json({ message: "Email not verified. Please check your email for the verification link." });
+            return res.status(422).json({ message: "Email not verified. Please check your email for the verification link." });
         }
         const JWTPayload = {
             id: user?.id,
@@ -80,6 +80,40 @@ router.post("/login", async (req, res) => {
                 ...JWTPayload,
                 token: `Bearer ${token}`
             }
+        });
+    }
+    catch (error) {
+        if (error instanceof ZodError) {
+            const errors = formatError(error);
+            return res.status(422).json({ message: "Invalid Data", errors });
+        }
+        return res.status(500).json({ message: "Internal Server Error" });
+    }
+});
+router.post("/check/credentials", async (req, res) => {
+    try {
+        const body = req.body;
+        const payload = loginSchema.parse(body);
+        let user = await prisma.user.findUnique({ where: {
+                email: payload.email
+            } });
+        if (!user || user == null || user === undefined) {
+            return res.status(422).json({ errors: {
+                    email: "Email not found."
+                } });
+        }
+        const compare = await bcrypt.compare(payload.password, user.password);
+        if (!compare) {
+            return res.status(422).json({ errors: {
+                    email: "Invalid credentials"
+                } });
+        }
+        if (user?.emailVarifiedAt === null) {
+            return res.status(422).json({ message: "Email not verified. Please check your email for the verification link." });
+        }
+        return res.json({
+            message: "Logged in successfully",
+            data: {}
         });
     }
     catch (error) {
