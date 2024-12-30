@@ -9,7 +9,7 @@ export const emailQueue = new Queue(emailQueueName, {
 //worker
 export const emailWorker = new Worker(emailQueueName, async (job) => {
     const data = job.data;
-    console.log(data);
+    // console.log(data);
     await sendMail(data.to, data.subject, data.html);
 }, {
     connection: redisConnection
