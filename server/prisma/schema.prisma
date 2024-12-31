@@ -17,4 +17,16 @@ model User {
   emailVarifiedAt    DateTime?
   emailVarifyToken   String?
   createdAt          DateTime  @default(now())
+  Clash              Clash[]
+}
+
+model Clash {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     Int
+  title       String
+  description String
+  image       String
+  created_at  DateTime @default(now())
+  expire_at   DateTime
 }
