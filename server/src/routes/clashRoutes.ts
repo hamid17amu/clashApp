@@ -56,6 +56,9 @@ router.get("/",async(req:Request, res:Response):Promise<any>=>{
         const clash = await prisma.clash.findMany({
             where:{
                 user_id:req.user?.id
+            },
+            orderBy:{
+                id:"desc"
             }
         });
 
