@@ -11,6 +11,6 @@ const router = Router();
 router.use("/api/auth", authRoutes);
 router.use("/api/auth", VerifyRoutes);
 router.use("/api/auth", passwordRoutes);
-router.use("/api/clash",authMiddleware,clashRoutes);
+router.use("/api/clash",clashRoutes);
 
 export default router;

@@ -51,7 +51,7 @@ router.post("/",authMiddleware,async(req:Request, res:Response):Promise<any>=>{
     }
 });
 
-router.get("/",async(req:Request, res:Response):Promise<any>=>{
+router.get("/",authMiddleware, async(req:Request, res:Response):Promise<any>=>{
     try {
         const clash = await prisma.clash.findMany({
             where:{
@@ -74,7 +74,7 @@ router.get("/",async(req:Request, res:Response):Promise<any>=>{
     }
 });
 
-router.get("/:id",async(req:Request, res:Response):Promise<any>=>{
+router.get("/:id", async(req:Request, res:Response):Promise<any>=>{
     try {
         const {id}=req.params;
         const clash = await prisma.clash.findUnique({
@@ -95,7 +95,7 @@ router.get("/:id",async(req:Request, res:Response):Promise<any>=>{
     }
 });
 
-router.put("/:id",authMiddleware,async(req:Request, res:Response):Promise<any>=>{
+router.put("/:id",authMiddleware,authMiddleware,async(req:Request, res:Response):Promise<any>=>{
     try {
         const {id}=req.params;
         const body=req.body;
@@ -182,5 +182,26 @@ router.delete("/:id",authMiddleware,async(req:Request, res:Response):Promise<any
     }
 });
 
+router.post("/items",authMiddleware, async(req:Request, res:Response):Promise<any>=>{
+    try {
+        const {id}=req.body;
+        const clash = await prisma.clash.findUnique({
+            where:{
+                id:Number(id)
+            }
+        });
+
+        if(!clash) return res.status(404).json({message:"clash not found"});
+
+        return res.json({message:"clash fetched successfully", data:clash});
+
+    } catch (error) {
+        if(error instanceof ZodError){
+                    const errors=formatError(error);
+                    return res.status(422).json({message:"Invalid Data", errors})
+                }
+                return res.status(500).json({message:"Internal Server Error"});
+    }
+});
 
 export default router;
