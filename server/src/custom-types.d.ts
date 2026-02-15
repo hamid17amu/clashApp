@@ -1,11 +1,11 @@
-interface AuthUser{
-    id: number,
-    name: string,
-    email: string
+interface AuthUser {
+    id: number;
+    name: string;
+    email: string;
 }
 
-declare namespace Express{
-    export interface Request{
-        user?: AuthUser
+declare namespace Express {
+    export interface Request {
+        user?: AuthUser;
     }
 }
